@@ -17,6 +17,7 @@
 
   Advance Observability 실습 챕터 실습 파일 가져오기
   ```powershell
+  cd c:\scpv2lab
   git clone https://github.com/SCPv2/advance_observability.git
   ```
 
