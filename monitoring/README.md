@@ -20,27 +20,47 @@
   git clone https://github.com/SCPv2/advance_observability.git
   ```
 
-- Samsung Cloud Platform CLI 및 Terraform 환경 설정
+- 실습 도구 설정
+  - Samsung Cloud Platform CLI
+    - 다운로드 주소 : https://docs.e.samsungsdscloud.com/clireference/cli-common/
+    - 작업 디렉토리(C:\scpv2lab)에 저장
+    - 환경 설정 : https://docs.e.samsungsdscloud.com/clireference/cli-common/
 
-  아래 파일을 다운로드해서 작업 디렉토리(C:\scpv2lab)에 저장
-  
-  CLI 다운로드 : https://docs.e.samsungsdscloud.com/clireference/cli-common/  
-  Terraform 다운로드 : https://developer.hashicorp.com/terraform/install
+  - Terraform
+    - 다운로드 주소 : https://developer.hashicorp.com/terraform/install
+    - 작업 디렉토리(C:\scpv2lab)에 저장
+    - 환경 설정 : [Terraform을 통한 인프라 운영 자동화](https://github.com/SCPv2/advance_iac/tree/main/terraform) 참조
 
-- Terraform 환경 설정 : [Terraform을 통한 인프라 운영 자동화](https://github.com/SCPv2/advance_iac/tree/main/terraform) 참조
+  - Node.js
+    - 설치 파일 주소 : https://nodejs.org/ko/download
 
 ## 실습 자원 배포
-
 -  Terraform 실행  
     ```powershell
-    cd c:\scpv2lab\advance_observability\monitoring\
+    cd  C:\scpv2lab\advance_obsevability\monitoring\terraform
     
     terraform init
     terraform validate
     terraform plan
     
     terraform apply --auto-approve
-   ``` 
+   ```
+
+- Samsung Cloud Platform 인증키 생성
+
+- Samsung Cloud Platform Object Storage 생성
+  - 버킷명 : celog
+    
+- Samsung Cloud Platform Container Registry 생성
+  - 레지스트리명 : `cescr`
+    - 엔드포인트 : 프라이빗 : 사용 : cebastion, cek8s
+  - 리포지토리명 : `logapp`
+
+   
+   
+   
+   
+   
    - 변수 입력
      var.db_password
        Enter a value:  PostgreSQL(DBaaS)의 관리자(labuser)의 암호 임의 입력
