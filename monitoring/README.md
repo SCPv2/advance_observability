@@ -1,4 +1,4 @@
-# 클라우드 모니터링
+# Monitoring
 
 ## 실습 환경 구성
 
@@ -83,7 +83,6 @@
   |헬스 체크 IP|10.10.2.0/24|TCP *30000*|Inbound|
 
 ## 환경 검토
-
 - Architecture Diagram 검토
 
 ## 
