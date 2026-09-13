@@ -101,19 +101,8 @@
 - 서비스 부하 생성
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 1000 -Duration 30   
-  ```
-  앞 명령 실행 후 5분 뒤 실행
-  ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 1000 -Duration 60   
-  ```
-  앞 명령 실행 후 5분 뒤 실행
-  ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
   .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
-
 - Service Watch 대시보드 생성
   대시보드명: `Creative Energy`
 
@@ -128,21 +117,9 @@
   - DB계층  부하 확인
     - PostgreSQL(DBaaS) 
 ## 세부 모니터링 구성
-- Virtual Server 세부 모니터링 활성화 설정
-  설정 후 5분 후 실행
-  ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 1000 -Duration 30   
-  ```
-  앞 명령 실행 후 5분 뒤 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
   .\loadgen.ps1 -Rps 1000 -Duration 60   
-  ```
-  앞 명령 실행 후 5분 뒤 실행
-  ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 ## 사용자 정의 지표 구성
 - ServiceWatch Agent를 위한 사전 환경 설정([참고 문서](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#configuration))
@@ -210,3 +187,14 @@
   .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 - 사용자 정의 지표 확인 및 대시보드에 지표 추가
+
+## 경보 생성
+- 경보 정책명: `CPU_Average_Alert`
+- 지표 선택: Virtual Server / ceweb / 최대 / 1분
+- 평가 범위: 300
+- 통계: 최대
+- 조건 연산자: `>=`
+- 임계값: `20`
+- 경보 단계: Low
+- 알림 수신자: 등록된 사용자 선택
+- 
