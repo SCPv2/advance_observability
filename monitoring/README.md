@@ -102,7 +102,12 @@
   ```
 - Service Watch 대시보드 생성
   대시보드명: `Creative_Energy`
-
+  - 개별 위젯 추가
+    - Virtual Server
+      - CPU Usage: ceweb
+      - 시간: 1시간
+      - 통계: 최대
+      - 집계기간: 5분
 - 모니터링 지표 확인
   - WEB계층 부하 확인
     - Virtual Server
