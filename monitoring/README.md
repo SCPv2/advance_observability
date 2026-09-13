@@ -47,19 +47,9 @@
     terraform apply --auto-approve
    ```
    - 변수 입력
-      var.user_puplic_ip
+      var.my_public_ip
         Enter a value: 실습자 PC의 Public IP 주소 입력
 
-- 실습 파일 다운로드 및 압축해제
-  강의 게시판에서 압축파일 다운로드 및 해제
-  - 압축파일명 : observability_lab.zip
-  - 다운로드 경로 : `C:\scpv2lab\advance_obsevability\monitoring\`
-  ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring\
-
-  Expand-Archive -Path .\observability_lab.zip -DestinationPath C:\scpv2lab\advance_obsevability\monitoring -Force
-  ```
-  
 - 인증키 생성
 
 - Object Storage 생성
@@ -70,6 +60,18 @@
     - 엔드포인트 : 프라이빗 : 사용 : cebastion, ce-ske
   - 리포지토리명 : `logapp`
 
+## 실습용 애플리케이션 구성
+
+- 실습 파일 다운로드 및 압축해제
+  강의 게시판에서 압축파일 다운로드 및 해제
+  - 압축파일명 : observability_lab.zip
+  - 다운로드 경로 : `C:\scpv2lab\advance_obsevability\monitoring\`
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring\
+
+  Expand-Archive -Path .\observability_lab.zip -DestinationPath C:\scpv2lab\advance_obsevability\monitoring -Force
+  ```
+
 - Kubernetes Engine kubeconfig 다운로드
   - 다운로드 위치 : C:\scpv2lab\advance_obsevability\monitoring\kubeconfig
 
@@ -79,7 +81,7 @@
   .\local-setup.ps1
   ```
   ```bash
-  .\logapp-setup.sh
+  ./logapp-setup.sh
   ```
   - Access Key: 사용자 인증키 입력
   - Secret Key: 사용자 인증키 입력
@@ -95,4 +97,36 @@
 ## 환경 검토
 - Architecture Diagram 검토
 
-## 
+## 모니터링 가능 자원 식별
+- 서비스 부하 생성
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
+  
+  .\loadgen.ps1 -Rps 3000 -Duration 300 
+  ```
+
+- 모니터링 지표 확인
+  - WEB계층 부하 확인
+    - Virtual Server
+    - VPC Internet Gateway
+  - APP계층 부하 확인
+  - VPC Internet 
+
+## 모니터링 가능 자원 식별
+
+- 서비스 부하 생성
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
+  
+  .\loadgen.ps1 -Rps 3000 -Duration 300                          # web_public_ip:3000, 20 rps, 300초
+  ```
+  앞 명령 실행 후 5분 뒤 실행
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
+  .\loadgen.ps1 -Rps 3000 -Duration 30   
+  ```
+  앞 명령 실행 후 5분 뒤 실행
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
+  .\loadgen.ps1 -Rps 3000 -Duration 300   
+  ```
