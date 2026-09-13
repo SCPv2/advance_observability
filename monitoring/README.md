@@ -38,7 +38,7 @@
 ## 실습 자원 배포
 -  Terraform 실행  
     ```powershell
-    cd  C:\scpv2lab\advance_obsevability\monitoring\terraform
+    cd  C:\scpv2lab\advance_observability\monitoring\terraform
     
     terraform init
     terraform validate
@@ -62,19 +62,19 @@
 - 실습 파일 다운로드 및 압축해제
   강의 게시판에서 압축파일 다운로드 및 해제
   - 압축파일명 : observability_lab.zip
-  - 다운로드 경로 : `C:\scpv2lab\advance_obsevability\monitoring\`
+  - 다운로드 경로 : `C:\scpv2lab\advance_observability\monitoring\`
   ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring\
+  cd C:\scpv2lab\advance_observability\monitoring\
 
-  Expand-Archive -Path .\observability_lab.zip -DestinationPath C:\scpv2lab\advance_obsevability\monitoring -Force
+  Expand-Archive -Path .\observability_lab.zip -DestinationPath C:\scpv2lab\advance_observability\monitoring -Force
   ```
 
 - Kubernetes Engine kubeconfig 다운로드
-  - 다운로드 위치 : C:\scpv2lab\advance_obsevability\monitoring\kubeconfig
+  - 다운로드 위치 : C:\scpv2lab\advance_observability\monitoring\kubeconfig
 
 - Bastion Server 접속 및 서버 설정 파일 전송
   ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
+  cd C:\scpv2lab\advance_observability\monitoring
   .\local-setup.ps1
   ```
   ```bash
@@ -97,7 +97,7 @@
 ## 모니터링 가능 자원 식별
 - 서비스 부하 생성
   ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
+  cd C:\scpv2lab\advance_observability\monitoring
   .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 - Service Watch 대시보드 생성
@@ -115,7 +115,7 @@
     - PostgreSQL(DBaaS) 
 ## 세부 모니터링 구성
   ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
+  cd C:\scpv2lab\advance_observability\monitoring
   .\loadgen.ps1 -Rps 1000 -Duration 60   
   ```
 ## 사용자 정의 지표 구성
@@ -180,7 +180,7 @@
 
 - 부하 생성
   ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
+  cd C:\scpv2lab\advance_observability\monitoring
   .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 - 사용자 정의 지표 확인 및 대시보드에 지표 추가
