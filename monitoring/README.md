@@ -101,17 +101,17 @@
 - 서비스 부하 생성
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 3000 -Duration 30   
+  .\loadgen.ps1 -Rps 1000 -Duration 30   
   ```
   앞 명령 실행 후 5분 뒤 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 300 -Duration 60   
+  .\loadgen.ps1 -Rps 1000 -Duration 60   
   ```
   앞 명령 실행 후 5분 뒤 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 300 -Duration 300   
+  .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 
 - Service Watch 대시보드 생성
@@ -132,17 +132,17 @@
   설정 후 5분 후 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 300 -Duration 30   
+  .\loadgen.ps1 -Rps 1000 -Duration 30   
   ```
   앞 명령 실행 후 5분 뒤 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 300 -Duration 60   
+  .\loadgen.ps1 -Rps 1000 -Duration 60   
   ```
   앞 명령 실행 후 5분 뒤 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 300 -Duration 300   
+  .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 ## 사용자 정의 지표 구성
 - ServiceWatch Agent를 위한 사전 환경 설정([참고 문서](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#configuration))
@@ -207,6 +207,6 @@
 - 부하 생성
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  .\loadgen.ps1 -Rps 300 -Duration 300   
+  .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 - 사용자 정의 지표 확인 및 대시보드에 지표 추가
