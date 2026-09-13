@@ -60,7 +60,7 @@
     - 엔드포인트 : 프라이빗 : 사용 : cebastion, ce-ske
   - 리포지토리명 : `logapp`
 
-## 실습용 애플리케이션 구성
+## 실습 도구 구성
 
 - 실습 파일 다운로드 및 압축해제
   강의 게시판에서 압축파일 다운로드 및 해제
@@ -86,7 +86,7 @@
   - Access Key: 사용자 인증키 입력
   - Secret Key: 사용자 인증키 입력
   - SCR 프라이빗 엔드포인트: Container Registry의 프라이빗 엔드포인트 URL
- 
+
 - Load Balancer Firewall 규칙입력
   |	출발지|목적지|서비스|방향	|
   |:----:|:----:|:----:|:----:|
@@ -101,26 +101,35 @@
 - 서비스 부하 생성
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
-  
-  .\loadgen.ps1 -Rps 3000 -Duration 300 
+  .\loadgen.ps1 -Rps 3000 -Duration 30   
   ```
+  앞 명령 실행 후 5분 뒤 실행
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
+  .\loadgen.ps1 -Rps 3000 -Duration 60   
+  ```
+  앞 명령 실행 후 5분 뒤 실행
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
+  .\loadgen.ps1 -Rps 3000 -Duration 300   
+  ```
+
+- Service Watch 대시보드 생성
+  대시보드명: `Creative Energy`
 
 - 모니터링 지표 확인
   - WEB계층 부하 확인
     - Virtual Server
     - VPC Internet Gateway
   - APP계층 부하 확인
-  - VPC Internet 
-
-## 모니터링 가능 자원 식별
-
-- 서비스 부하 생성
-  ```powershell
-  cd C:\scpv2lab\advance_obsevability\monitoring
-  
-  .\loadgen.ps1 -Rps 3000 -Duration 300                          # web_public_ip:3000, 20 rps, 300초
-  ```
-  앞 명령 실행 후 5분 뒤 실행
+    - Kubernetes Engine node
+    - Load Balancer
+    - File Storage
+  - DB계층  부하 확인
+    - PostgreSQL(DBaaS) 
+## 세부 모니터링 구성
+- Virtual Server 세부 모니터링 활성화 설정
+  설정 후 5분 후 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
   .\loadgen.ps1 -Rps 3000 -Duration 30   
@@ -128,5 +137,76 @@
   앞 명령 실행 후 5분 뒤 실행
   ```powershell
   cd C:\scpv2lab\advance_obsevability\monitoring
+  .\loadgen.ps1 -Rps 3000 -Duration 60   
+  ```
+  앞 명령 실행 후 5분 뒤 실행
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
   .\loadgen.ps1 -Rps 3000 -Duration 300   
   ```
+## 사용자 정의 지표 구성
+- ServiceWatch Agent를 위한 사전 환경 설정([참고 문서](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#configuration))
+  - Security Group 규칙 추가 : Outbound / TCP / 443 / [ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main)
+  - Internet Gateway Firewall 규칙 : Outbound / TCP / 443 / Allow / 출발지 주소(ceweb Private IP(`10.0.1.11`)) / 목적지 주소([ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main))
+
+- ServiceWatch Agent URL 확인
+  ServiceWatch 콘솔 > Service Home > 시작 위젯
+
+- ServiceWatch Agent 다운로드
+  ```bash
+  wget "<Agent 다운로드 URL>" -O ServiceWatch_Agent.zip
+  unzip ServiceWatch_Agent.zip
+  chmod +x agent/otelcontribcol_linux_amd64 agent/servicewatch-agent-manager-linux-amd64
+  ```
+  
+- ServiceWatch Agent 설정
+  ```bash
+  mkdir -p ~/swagent && cp agent/examples/os-metrics-min-examples/*.json ~/swagent/
+  rm ~/swagent/log.json          # 1차시는 실습 목적상 지표만 설정. log.json 이 있으면 로그 그룹·스트림이 먼저 필요하다
+  ```
+  ```bash
+  vi ~/swagent/agent.json
+  ```
+  아래 json을 참조해서 작성
+  ```json
+  {
+     "namespace": "swmetric/web",
+     "accessKey": "인증키 <Access Key>",
+     "accessSecret": "인증키 <Secret Key>",
+     "resourceId": "<ceweb 자원 ID>",
+     "openApiEndpoint": "https://servicewatch.kr-west1.e.samsungsdscloud.com",
+     "telemetryPort": 8888
+  }
+  ```
+  ```bash
+  vi ~/swagent/metric.json
+  ```
+  아래 json을 참조해서 작성, `targets`을 9200 으로 수정 (예시는 9100, 우리 Node Exporter 는 9200)  
+  ```json
+  {
+     "prometheus": {
+        "scrape_configs": { "targets": ["localhost:9200"], "jobName": "node-exporter" }
+     },
+     "metricMetas": [
+        { "metricName": "node_memory_MemAvailable_bytes", "dimensions": [["resource_id"]], "unit": "Bytes",
+          "aggregationMethod": "SUM", "descriptionKo": "가용 메모리", "descriptionEn": "node memory available bytes" },
+        { "metricName": "node_memory_MemTotal_bytes",     "dimensions": [["resource_id"]], "unit": "Bytes",
+          "aggregationMethod": "SUM", "descriptionKo": "전체 메모리", "descriptionEn": "node memory total bytes" },
+        { "metricName": "node_filesystem_avail_bytes",    "dimensions": [["mountpoint"]],  "unit": "Bytes",
+          "aggregationMethod": "SUM", "descriptionKo": "파일시스템 여유", "descriptionEn": "node filesystem available bytes" }
+     ]
+  }
+  ```
+  실행 및 중지
+  ```bash
+  cd ~
+  ./agent/servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector ./agent/otelcontribcol_linux_amd64
+  ./agent/servicewatch-agent-manager-linux-amd64 -action stop -dir ~/swagent
+  ```
+
+- 부하 생성
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring
+  .\loadgen.ps1 -Rps 3000 -Duration 300   
+  ```
+- 사용자 정의 지표 확인 및 대시보드에 지표 추가
