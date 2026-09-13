@@ -51,10 +51,7 @@
         Enter a value: 실습자 PC의 Public IP 주소 입력
 
 - 인증키 생성
-
-- Object Storage 생성
-  - 버킷명 : celog
-    
+  
 - Container Registry 생성
   - 레지스트리명 : `cescr`
     - 엔드포인트 : 프라이빗 : 사용 : cebastion, ce-ske
