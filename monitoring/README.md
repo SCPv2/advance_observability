@@ -49,7 +49,17 @@
    - 변수 입력
       var.user_puplic_ip
         Enter a value: 실습자 PC의 Public IP 주소 입력
- 
+
+- 실습 파일 다운로드 및 압축해제
+  강의 게시판에서 압축파일 다운로드 및 해제
+  - 압축파일명 : observability_lab.zip
+  - 다운로드 경로 : `C:\scpv2lab\advance_obsevability\monitoring\`
+  ```powershell
+  cd C:\scpv2lab\advance_obsevability\monitoring\
+
+  Expand-Archive -Path .\observability_lab.zip -DestinationPath C:\scpv2lab\advance_obsevability\monitoring -Force
+  ```
+  
 - 인증키 생성
 
 - Object Storage 생성
