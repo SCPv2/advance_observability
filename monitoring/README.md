@@ -119,6 +119,8 @@
   - DB계층  부하 확인
     - PostgreSQL(DBaaS) 
 ## 세부 모니터링 구성
+- Virtual Server : 세부모니터링 활성화
+  5분 후 실행
   ```powershell
   cd C:\scpv2lab\advance_observability\monitoring
   .\loadgen.ps1 -Rps 1000 -Duration 60   
