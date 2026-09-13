@@ -101,7 +101,7 @@
   .\loadgen.ps1 -Rps 1000 -Duration 300   
   ```
 - Service Watch 대시보드 생성
-  대시보드명: `Creative Energy`
+  대시보드명: `Creative_Energy`
 
 - 모니터링 지표 확인
   - WEB계층 부하 확인
