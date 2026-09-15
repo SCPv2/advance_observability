@@ -146,7 +146,7 @@
   ssh -i mykey.pem rocky@10.10.1.11
   
   # wget이 없을 경우 실행
-  sudo dnf install wget -y
+  sudo dnf install wget unzip -y
 
   wget "<Agent 다운로드 URL>" -O ServiceWatch_Agent.zip
   unzip ServiceWatch_Agent.zip
