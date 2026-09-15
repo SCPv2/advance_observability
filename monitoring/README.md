@@ -150,12 +150,12 @@
 
   wget "<Agent 다운로드 URL>" -O ServiceWatch_Agent.zip
   unzip ServiceWatch_Agent.zip
-  chmod +x agent/otelcontribcol_linux_amd64 agent/servicewatch-agent-manager-linux-amd64
+  chmod +x otelcontribcol_linux_amd64 servicewatch-agent-manager-linux-amd64
   ```
   
 - ServiceWatch Agent 설정
   ```bash
-  mkdir -p ~/swagent && cp agent/examples/os-metrics-min-examples/*.json ~/swagent/
+  mkdir -p ~/swagent && cp /os-metrics-min-examples/*.json ~/swagent/
   rm ~/swagent/log.json          # Monitoring 차시는 실습 목적상 지표만 설정. log.json 이 있으면 로그 그룹·스트림이 먼저 필요하다
   ```
   ```bash
