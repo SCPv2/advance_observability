@@ -130,7 +130,7 @@
   - Security Group 규칙 추가 : Outbound / TCP / 443 / [ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main)
   - Internet Gateway Firewall 규칙 : Outbound / TCP / 443 / Allow / 출발지 주소(ceweb Private IP(`10.0.1.11`)) / 목적지 주소([ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main))
 
-- ServiceWatch Agent URL 확인
+- ServiceWatch Agent URL 확인  
   ServiceWatch 콘솔 > Service Home > 시작 위젯
 
 - ServiceWatch Agent 다운로드
