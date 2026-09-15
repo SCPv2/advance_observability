@@ -130,79 +130,130 @@
   - Security Group 규칙 추가 : Outbound / TCP / 443 / [ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main)
   - Internet Gateway Firewall 규칙 : Outbound / TCP / 443 / Allow / 출발지 주소(ceweb Private IP(`10.0.1.11`)) / 목적지 주소([ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main))
 
-- ServiceWatch Agent URL 확인  
-  ServiceWatch 콘솔 > Service Home > 시작 위젯
+- 인증키 보안 설정
+  보안 설정 : WEB서버(ceweb)의 Public NAT IP 등록
 
-- ServiceWatch Agent 다운로드
-  ```poweshell
-  # Bastion 서버에 SSH 접속되어 있지 않을 경우
-  cd C:\scpv2lab\advance_observability\monitoring\terraform
-
-  ssh -i mykey.pem rocky@[cebastion Public IP]
-  ```
-  Bastion 서버(cebastion)에 접속해서 실행   
-  ```bash
-  # WEB서버(ceweb)에 접속
-  ssh -i mykey.pem rocky@10.10.1.11
+- Node Exporter 구성
+    ```poweshell
+    # Bastion 서버에 SSH 접속되어 있지 않을 경우
+    cd C:\scpv2lab\advance_observability\monitoring\terraform
   
-  # wget이 없을 경우 실행
-  sudo dnf install wget unzip -y
+    ssh -i mykey.pem rocky@[cebastion Public IP]
+    ```
 
-  wget "<Agent 다운로드 URL>" -O ServiceWatch_Agent.zip
-  unzip ServiceWatch_Agent.zip
-  chmod +x otelcontribcol_linux_amd64 servicewatch-agent-manager-linux-amd64
-  ```
+  WEB서버(ceweb)에 접속
+    ```bash
+    ssh -i mykey.pem rocky@[ceweb Private IP]
+    ```
+  Node Exporter 다운로드
+    ```bash
+    sudo useradd --no-create-home --shell /bin/false node_exporter
+    cd /tmp
+    curl -fsSLO https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
+    sudo tar -xzf node_exporter-1.7.0.linux-amd64.tar.gz -C /usr/local/bin --strip-components=1 node_exporter-1.7.0.linux-amd64/node_exporter
+    sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+    ```
+  Node Exporter 설정
+    ```bash
+    sudo tee /etc/systemd/system/node_exporter.service > /dev/null <<'EOF'
+    [Unit]
+    Description=Prometheus Node Exporter
+    Wants=network-online.target
+    After=network-online.target
   
-- ServiceWatch Agent 설정
-  ```bash
-  mkdir -p ~/swagent && cp /os-metrics-min-examples/*.json ~/swagent/
-  rm ~/swagent/log.json          # Monitoring 차시는 실습 목적상 지표만 설정. log.json 이 있으면 로그 그룹·스트림이 먼저 필요하다
-  ```
-  ```bash
-  vi ~/swagent/agent.json
-  ```
-  아래 json을 참조해서 작성
-  ```json
-  {
-     "namespace": "swmetric/web",
-     "accessKey": "인증키 <Access Key>",
-     "accessSecret": "인증키 <Secret Key>",
-     "resourceId": "<ceweb 자원 ID>",
-     "openApiEndpoint": "https://servicewatch.kr-west1.e.samsungsdscloud.com",
-     "telemetryPort": 8888
-  }
-  ```
-  ```bash
-  vi ~/swagent/metric.json
-  ```
-  아래 json을 참조해서 작성, `targets`을 9200 으로 수정 (예시는 9100, 우리 Node Exporter 는 9200)  
-  ```json
-  {
-     "prometheus": {
-        "scrape_configs": { "targets": ["localhost:9200"], "jobName": "node-exporter" }
-     },
-     "metricMetas": [
-        { "metricName": "node_memory_MemAvailable_bytes", "dimensions": [["resource_id"]], "unit": "Bytes",
-          "aggregationMethod": "SUM", "descriptionKo": "가용 메모리", "descriptionEn": "node memory available bytes" },
-        { "metricName": "node_memory_MemTotal_bytes",     "dimensions": [["resource_id"]], "unit": "Bytes",
-          "aggregationMethod": "SUM", "descriptionKo": "전체 메모리", "descriptionEn": "node memory total bytes" },
-        { "metricName": "node_filesystem_avail_bytes",    "dimensions": [["mountpoint"]],  "unit": "Bytes",
-          "aggregationMethod": "SUM", "descriptionKo": "파일시스템 여유", "descriptionEn": "node filesystem available bytes" }
-     ]
-  }
-  ```
-  실행 및 중지
-  ```bash
-  cd ~
-  ./agent/servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector ./agent/otelcontribcol_linux_amd64
-  ./agent/servicewatch-agent-manager-linux-amd64 -action stop -dir ~/swagent
-  ```
+    [Service]
+    User=node_exporter
+    Group=node_exporter
+    Type=simple
+    ExecStart=/usr/local/bin/node_exporter \
+      --web.listen-address=:9200 \
+      --collector.disable-defaults \
+      --collector.meminfo \
+      --collector.filesystem \
+      --collector.loadavg
+  
+    Restart=on-failure
+  
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+    ```
 
+  Node Exporter 실행 
+    ```bash
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now node_exporter
+    curl -s http://localhost:9200/metrics | grep node_memory_MemAvailable
+    ```
+- ServiceWatch Agent 구성
+  
+  ServiceWatch <Agent 다운로드 URL> 확인  
+    ServiceWatch 콘솔 > Service Home > 시작 위젯
+
+  ServiceWatch Agent 다운로드
+    ```bash  
+    # wget이 없을 경우 실행
+    sudo dnf install wget unzip -y
+  
+    wget "<Agent 다운로드 URL>" -O ServiceWatch_Agent.zip
+    unzip ServiceWatch_Agent.zip
+    chmod +x otelcontribcol_linux_amd64 servicewatch-agent-manager-linux-amd64
+    ```
+  
+  ServiceWatch Agent 설정
+  실습 설정용 디렉토리 생성 및 파일 복사, log.json은 Logging 차시에서 구성하므로 삭제
+    ```bash
+    mkdir -p ~/swagent && cp os-metrics-min-examples/*.json ~/swagent/
+    rm ~/swagent/log.json         
+    ```
+  agent.json 설정
+    ```bash
+    vi ~/swagent/agent.json
+    ```
+     아래를 참조해서 작성
+       "namespace": `"swmetric/web"`
+       "accessKey": "인증키 <Access Key>",
+       "accessSecret": "인증키 <Secret Key>",
+       "resourceId": "<ceweb 자원 ID>",
+       "openApiEndpoint": `"https://servicewatch.kr-west1.e.samsungsdscloud.com"`,
+       "telemetryPort": 8888
+
+  metric.json 설정  
+    ```bash
+    vi ~/swagent/metric.json
+    ```
+     아래 json을 참조해서 작성, `targets`을 9200 으로 수정 (예시는 9100, 우리 Node Exporter 는 9200)  
+      ```json
+      {
+         "prometheus": {
+            "scrape_configs": { "targets": ["localhost:9200"], "jobName": "node-exporter" }
+         },
+         "metricMetas": [
+            { "metricName": "node_memory_MemAvailable_bytes", "dimensions": [["resource_id"]], "unit": "Bytes",
+              "aggregationMethod": "SUM", "descriptionKo": "가용 메모리", "descriptionEn": "node memory available bytes" },
+            { "metricName": "node_memory_MemTotal_bytes",     "dimensions": [["resource_id"]], "unit": "Bytes",
+              "aggregationMethod": "SUM", "descriptionKo": "전체 메모리", "descriptionEn": "node memory total bytes" },
+            { "metricName": "node_filesystem_avail_bytes",    "dimensions": [["mountpoint"]],  "unit": "Bytes",
+              "aggregationMethod": "SUM", "descriptionKo": "파일시스템 여유", "descriptionEn": "node filesystem available bytes" }
+         ]
+      }
+      ```
+  Agent 실행
+    ```bash
+    cd ~
+    ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector ./agent/otelcontribcol_linux_amd64
+    ```
+  Agent 중지(필요시)
+    ```bash
+    cd ~
+    ./servicewatch-agent-manager-linux-amd64 -action stop -dir ~/swagent
+    ```
 - 부하 생성
-  ```powershell
-  cd C:\scpv2lab\advance_observability\monitoring
-  .\loadgen.ps1 -Rps 1000 -Duration 300   
-  ```
+  실습 PC에서 실행
+    ```powershell
+    cd C:\scpv2lab\advance_observability\monitoring
+    .\loadgen.ps1 -Rps 1000 -Duration 300   
+    ```
 - 사용자 정의 지표 확인 및 대시보드에 지표 추가
 
 ## 경보 생성
