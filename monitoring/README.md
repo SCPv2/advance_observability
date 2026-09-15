@@ -134,8 +134,18 @@
   ServiceWatch 콘솔 > Service Home > 시작 위젯
 
 - ServiceWatch Agent 다운로드
+  ```poweshell
+  # Bastion 서버에 SSH 접속되어 있지 않을 경우
+  cd C:\scpv2lab\advance_observability\monitoring\terraform
+
+  ssh -i mykey.pem rocky@[cebastion Public IP]
+  ```
+  Bastion 서버(cebastion)에 접속해서 실행   
   ```bash
-  #wget이 없을 경우 실행
+  # WEB서버(ceweb)에 접속
+  ssh -i mykey.pem rocky@10.10.1.11
+  
+  # wget이 없을 경우 실행
   sudo dnf install wget -y
 
   wget "<Agent 다운로드 URL>" -O ServiceWatch_Agent.zip
