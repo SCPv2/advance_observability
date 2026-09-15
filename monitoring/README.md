@@ -223,21 +223,21 @@
     vi ~/swagent/metric.json
     ```
      아래 json을 참조해서 작성, `targets`을 9200 으로 수정 (예시는 9100, 우리 Node Exporter 는 9200)  
-      ```json
-      {
-         "prometheus": {
-            "scrape_configs": { "targets": ["localhost:9200"], "jobName": "node-exporter" }
-         },
-         "metricMetas": [
-            { "metricName": "node_memory_MemAvailable_bytes", "dimensions": [["resource_id"]], "unit": "Bytes",
-              "aggregationMethod": "SUM", "descriptionKo": "가용 메모리", "descriptionEn": "node memory available bytes" },
-            { "metricName": "node_memory_MemTotal_bytes",     "dimensions": [["resource_id"]], "unit": "Bytes",
-              "aggregationMethod": "SUM", "descriptionKo": "전체 메모리", "descriptionEn": "node memory total bytes" },
-            { "metricName": "node_filesystem_avail_bytes",    "dimensions": [["mountpoint"]],  "unit": "Bytes",
-              "aggregationMethod": "SUM", "descriptionKo": "파일시스템 여유", "descriptionEn": "node filesystem available bytes" }
-         ]
-      }
-      ```
+    ```json
+    {
+       "prometheus": {
+          "scrape_configs": { "targets": ["localhost:9200"], "jobName": "node-exporter" }
+       },
+       "metricMetas": [
+          { "metricName": "node_memory_MemAvailable_bytes", "dimensions": [["resource_id"]], "unit": "Bytes",
+            "aggregationMethod": "SUM", "descriptionKo": "가용 메모리", "descriptionEn": "node memory available bytes" },
+          { "metricName": "node_memory_MemTotal_bytes",     "dimensions": [["resource_id"]], "unit": "Bytes",
+            "aggregationMethod": "SUM", "descriptionKo": "전체 메모리", "descriptionEn": "node memory total bytes" },
+          { "metricName": "node_filesystem_avail_bytes",    "dimensions": [["mountpoint"]],  "unit": "Bytes",
+            "aggregationMethod": "SUM", "descriptionKo": "파일시스템 여유", "descriptionEn": "node filesystem available bytes" }
+       ]
+    }
+    ```
   Agent 실행
     ```bash
     cd ~
