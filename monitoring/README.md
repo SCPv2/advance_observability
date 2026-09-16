@@ -211,11 +211,11 @@
     vi ~/swagent/agent.json
     ```
      아래를 참조해서 작성
-       "namespace": `"swmetric/web"`
-       "accessKey": "인증키 <Access Key>",
-       "accessSecret": "인증키 <Secret Key>",
-       "resourceId": "<ceweb 자원 ID>",
-       "openApiEndpoint": `"https://servicewatch.kr-west1.e.samsungsdscloud.com"`,
+       "namespace": `"swmetric/web"`  
+       "accessKey": "인증키 <Access Key>",  
+       "accessSecret": "인증키 <Secret Key>",  
+       "resourceId": "<ceweb 자원 ID>",  
+       "openApiEndpoint": `"https://servicewatch.kr-west1.e.samsungsdscloud.com"`,  
        "telemetryPort": 8888
 
   metric.json 설정  
@@ -241,7 +241,7 @@
   Agent 실행
     ```bash
     cd ~
-    ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector ./agent/otelcontribcol_linux_amd64
+    ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector otelcontribcol_linux_amd64
     ```
   Agent 중지(필요시)
     ```bash
