@@ -1,5 +1,6 @@
 # Logging
 
+## Virtual Server Logging
 
 https://docs.e.samsungsdscloud.com/userguide/compute/virtual_server/how_to_guides/ntp/
 
@@ -87,12 +88,52 @@ ssh -i mykey.pem rocky@[cebastion_public_ip]
   # Web VS — Bastion 에서
   ./logapp-setup.sh --only-web --log-mode=good
 
-  # API Pod
   kubectl -n logapp patch configmap logapp-config -p '{"data":{"LOG_MODE":"good"}}'
   kubectl -n logapp rollout restart deploy/logapp-api
   ```
-  
   -(ceweb)  `log.json` 의 `operators` 를 JSON 한 줄용으로 바꾼다 : `"regex": "^(?P<message>.*)$"` 만 남기고 `timestamp` 제거
+  ```bash
+  vi ~/swagent/log.json
+  ```
+  ```json
+  {
+   "fileLog": {
+      "include": ["/var/log/logapp/web.log"],
+      "operators": { "regex": "^(?P<message>.*)$" }
+   },
+   "logMetas": {
+      "log_group_value": "/lab/swmetric/web",
+      "log_stream_value": "web"
+   }
+  }
+  ```
+## Database Service Logging
+
+- PostgreSQL > 상세 정보 > ServiceWatch 로그 수집 : 사용
+
+## Kubernetes Engine Logging
+
+- Kubernetes Engine > 상세 정보 > ServiceWatch 로그 수집 : 사용
+
+## Network Logging 
+
+- Network Logging > Firewall > Object Storage(celog) 적용
+- Network Logging > Security Group > Object Storage(celog) 적용
+- Network Logging > NAT > Object Storage(celog) 적용
+
+- Firewall > IGW Firewall, Load Balancer Firewall 로그 사용
+- Security Group > ske, ceweb, ceapp, cebastion 로그 사용
+- Internet Gateway 로그 사용 
+
+## ServiceWatch 이벤트 
+
+- 이벤트 규칙 생성
+  - 이벤트 규칙명: `k8sevent`
+  - 이벤트 소스: `Kubernetes Engine`
+  - 이벤트 유형: `Node Pool`
+  - 적용 이벤트: `모든 이벤트`
+  - 적용 자원:`모든 자원`
+ 
 
   
 
