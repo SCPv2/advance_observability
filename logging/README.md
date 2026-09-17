@@ -68,8 +68,6 @@ t
 t -collector otelcontribcol_linux_amd64
 ```
 
-Kubernetes 컨테이너 로그 수집 : Kubernetes Engine > 클러스터 ce-ske 상세 > ServiceWatch 로그 수집 > 수정 > 사용
-
 ```bash
 cd C:\scpv2lab\advance_observability\monitoring
 .\loadgen.ps1 -Rps 20 -Duration 120
