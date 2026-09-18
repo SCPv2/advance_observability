@@ -71,8 +71,8 @@
 ## Database Service Logging
 - PostgreSQL > 상세 정보 > ServiceWatch 로그 수집 : 사용
 
-## Logging&Audit Trail 
-- IAM 정책 생성
+## Logging&Audit Trail  
+- IAM 정책 생성  
   https://docs.e.samsungsdscloud.com/userguide/management/logging_audit/how_to_guides/trail/#servicewatch
   - 정책명: `TrailLog`
 - IAM 역할 생성
