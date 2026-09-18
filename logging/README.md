@@ -5,7 +5,7 @@
 
 ## Virtual Server Logging
 
-- NTP 설정(ceweb)
+- NTP 설정(ceweb)  
    https://docs.e.samsungsdscloud.com/userguide/compute/virtual_server/how_to_guides/ntp/
    
    ```bash
