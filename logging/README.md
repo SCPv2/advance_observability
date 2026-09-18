@@ -75,6 +75,25 @@
 ## Database Service Logging
 - PostgreSQL > 상세 정보 > ServiceWatch 로그 수집 : 사용
 
+## Logging&Audit Trail 
+- IAM 정책 생성
+  https://docs.e.samsungsdscloud.com/userguide/management/logging_audit/how_to_guides/trail/#servicewatch
+  - 정책명: `TrailLog`
+- IAM 역할 생성
+  - 역할명: `TrailLogRole`
+  - 최대 세션 지속 시간: `1시간`
+  - 수행 주체: `서비스`
+  - Value: `loggingaudit.samsungsdscloud.com`
+  - 정책 연결: `TrailLog`
+- Trail 생성
+  - Trail명: `cetrail`
+  - 대상 리전: `한국 서부1`
+  - 저장 버킷 리전: `한국 서부1`
+  - 저장 버킷: `celog`
+  - 저장 형식: `JSON`
+  - ServiceWatch 로그 수집: 사용
+    - IAM 역할: `TrailLogRole`
+
 ## Network Logging 
 - Network Logging > Firewall > Object Storage(celog) 적용
 - Network Logging > Security Group > Object Storage(celog) 적용
