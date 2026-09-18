@@ -71,7 +71,6 @@
 
 ## Kubernetes Engine Logging
 - Kubernetes Engine > 상세 정보 > ServiceWatch 로그 수집 : 사용
-- Node Pool 노드 추가: 2 -> 3
 
 ## Database Service Logging
 - PostgreSQL > 상세 정보 > ServiceWatch 로그 수집 : 사용
