@@ -50,18 +50,14 @@
    ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector otelcontribcol_linux_amd64
    ```
 
-- ServiceWatch 로그 그룹 생성  
-   |로그 그룹명|로그 보관 정책| 
-   |----|----| 
-   |`/lab/swmetric/web`|30일| 
+- ServiceWatch 로그 그룹 생성
+  - 로그 그룹명:  `/lab/swmetric/web`
+  - 로그 보관 정책: `30일` 
 
 - 로그 스트림 생성  
-  로그 그룹: /lab/swmetric/web
-    
-   |로그 스트림명|원본 파일| 
-   |----|----| 
-   |`web`|`/var/log/logapp/web.log`| 
-   |`webaccess`|`/var/log/logapp/web_access.log`| 
+  - 로그 그룹: /lab/swmetric/web
+  - 로그 스트림명: `web`
+  - 원본 파일: `/var/log/logapp/web.log` 
 
 - 부하 생성(PC)   
    ```bash
