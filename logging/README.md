@@ -46,10 +46,8 @@
    
    ```bash
    cd ~
-   ./servicewatch-agent-manager-linux-amd64 -action stop -dir ~/swagen
-   t
-   ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagen
-   t -collector otelcontribcol_linux_amd64
+   ./servicewatch-agent-manager-linux-amd64 -action stop -dir ~/swagent
+   ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector otelcontribcol_linux_amd64
    ```
 
 - ServiceWatch 로그 그룹 생성  
