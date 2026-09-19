@@ -33,29 +33,29 @@
    ```
 - Agent 로그 설정(ceweb)  
 
-   ```bash
-   vi ~/swagent/log.json
-   ``` 
-   ```json
-   {
-      "fileLog": {
-         "include": ["/var/log/logapp/web.log"],
-         "operators": {
-            "regex": "^(?P<timestamp>\\S+ \\S+)\\s+(?P<message>.*)$",
-         }
-      },
-      "logMetas": {
-         "log_group_value": "/lab/swmetric/web",
-         "log_stream_value": "web"
-      }
-   }
-   ```
+    ```bash
+    vi ~/swagent/log.json
+    ``` 
+    ```json
+    {
+       "fileLog": {
+          "include": ["/var/log/logapp/web.log"],
+          "operators": {
+             "regex": "^(?P<timestamp>\\S+ \\S+)\\s+(?P<message>.*)$"}
+          }
+       },
+       "logMetas": {
+          "log_group_value": "/lab/swmetric/web",
+          "log_stream_value": "web"
+       }
+    }
+    ```
    
-   ```bash
-   cd ~
-   ./servicewatch-agent-manager-linux-amd64 -action stop -dir ~/swagent
-   ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector otelcontribcol_linux_amd64
-   ```
+    ```bash
+    cd ~
+    ./servicewatch-agent-manager-linux-amd64 -action stop -dir ~/swagent
+    ./servicewatch-agent-manager-linux-amd64 -action run  -dir ~/swagent -collector otelcontribcol_linux_amd64
+    ```
 
 - ServiceWatch 로그 그룹 생성
   - 로그 그룹명:  `/lab/swmetric/web`
