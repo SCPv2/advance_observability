@@ -4,7 +4,14 @@
   - 버킷명 : `celog`
 
 ## Virtual Server Logging
-
+- 웹서버(ceweb) 접속
+  ```powershell
+  cd C:\scpv2lab\advance_observability\monitoring\
+  ssh -i .\terraform\mykey.pem rocky@[Bastion_Public_IP]
+  #Bastion 접속 후
+  ssh -i mykey.pem rocky@[ceweb_Private_IP] 
+  ```
+  
 - NTP 설정(ceweb)  
    https://docs.e.samsungsdscloud.com/userguide/compute/virtual_server/how_to_guides/ntp/
    
