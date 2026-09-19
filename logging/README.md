@@ -40,9 +40,7 @@
     {
        "fileLog": {
           "include": ["/var/log/logapp/web.log"],
-          "operators": {
-             "regex": "^(?P<timestamp>\\S+ \\S+)\\s+(?P<message>.*)$"}
-          }
+          "operators": { "regex": "^(?P<message>.*)$" }
        },
        "logMetas": {
           "log_group_value": "/lab/swmetric/web",
