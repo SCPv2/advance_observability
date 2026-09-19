@@ -64,7 +64,7 @@
 - 로그 스트림 생성  
   - 로그 그룹: /lab/swmetric/web
   - 로그 스트림명: `web`
-  - 원본 파일: `/var/log/logapp/web.log` 
+  - 로그 스트림명: `webaccess`
 
 - 부하 생성(PC)   
    ```bash
