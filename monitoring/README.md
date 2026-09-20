@@ -130,7 +130,7 @@
   - Security Group 규칙 추가 : Outbound / TCP / 443 / [ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main)
   - Internet Gateway Firewall 규칙 : Outbound / TCP / 443 / Allow / 출발지 주소(ceweb Private IP(`10.0.1.11`)) / 목적지 주소([ServiceWatch OpenAPI Endpoint IP 주소](https://docs.e.samsungsdscloud.com/userguide/management/service_watch/how_to_guides/service_watch_agent/#main))
 
-- 인증키 보안 설정
+- 인증키 보안 설정  
   보안 설정 : WEB서버(ceweb)의 Public NAT IP 등록
 
 - Node Exporter 구성
