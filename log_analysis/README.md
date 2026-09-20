@@ -114,22 +114,17 @@ sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, e
   SQL
   chmod 700 ~/.duckdb/stored_secrets; chmod 600 ~/logs.duckdb
   duckdb ~/logs.duckdb -c "SELECT regexp_extract(filename,'s3://celog/([^/]+/[^/-]+)',1) src, count(*) files, sum(size) bytes FROM read_blob('s3://celog/**') GROUP BY 1 ORDER BY 1;"
+
+  nohup duckdb -ui ~/logs.duckdb > ~/duckdb-ui.log 2>&1 &
   ```
-
-- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- DuckDB 실행
+  실습 PC에서 실행
+  ```powershell
+  # PC — 터널 (이 창은 열어 둔다)
+  ssh -i terraform\mykey.pem -L 4213:localhost:4213 rocky@<bastion_public_ip>
+  ```
+  브라우저에서 실행
+  ```url
+  http://localhost:4213
+  ```
+  
