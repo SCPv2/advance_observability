@@ -167,10 +167,10 @@ sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, e
   ```
 
 - Hosts 파일 변경
-  관리자 권한으로 C:\Windows\System32\drivers\etc\hosts 파일에 아래 설정 등록
-  (Load Balancer(ceqq) Public NAT IP)  ceqq.ceqq.test
-  (Load Balancer(ceqq) Public NAT IP)  ceqq-console.dsc.test
-  (Load Balancer(ceqq) Public NAT IP)  ceqq-iam.dsc.test
+  관리자 권한으로 C:\Windows\System32\drivers\etc\hosts 파일에 아래 설정 등록  
+  (Load Balancer(ceqq) Public NAT IP)  ceqq.ceqq.test  
+  (Load Balancer(ceqq) Public NAT IP)  ceqq-console.dsc.test  
+  (Load Balancer(ceqq) Public NAT IP)  ceqq-iam.dsc.test  
 
 - Quick Query 접속
   ```url
