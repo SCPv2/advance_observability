@@ -142,7 +142,7 @@ sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, e
   - 도메인 설정: `ceqq.test`
   - 쿼리 엔진 타입: 공용 , 엔진 Spec : Auto Scaling 선택 안함
   - 최대 동시 실행 쿼리수: 32
-  - Data Service Console 연결 도메인 설정: `ceqq.dsc.test`
+  - Data Service Console 연결 도메인 설정: `dsc.test`
   - Host Alias: 사용안함
   - 클러스터명: `ceqqk8s`
   - 퍼블릭 엔드포인트 엑세스 : 사용 : 실습 PC의 Public IP 주소
