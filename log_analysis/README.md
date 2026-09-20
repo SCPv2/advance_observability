@@ -83,7 +83,7 @@ Bastion 서버에서 실행
 Web서버에서 실행
 ```bash
 # 에러가 발생한 것을 확인
-sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, error_message, stack}'
+sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, downstream_status, downstream_pod, trace_id, error_message, stack}'
 ```
 # Bastion 서버에서 실행
 ```bash
@@ -102,7 +102,7 @@ sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, e
   duckdb --version
   ```
   Object Storage 연결
-  Bastion 서버에서 실행, <Access Key>, <Secret Key>는 실제 값으로 대체, 인증키 보안 설정에 Bastion 서버의 Public IP 허용
+  Bastion 서버에서 실행, `<Access Key>`, `<Secret Key>`는 실제 값으로 대체, 인증키 보안 설정에 Bastion 서버의 Public IP 허용
   ```bash
   duckdb ~/logs.duckdb <<'SQL'
   INSTALL httpfs; LOAD httpfs;
@@ -123,11 +123,70 @@ sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, e
   # PC — 터널 (이 창은 열어 둔다)
   ssh -i terraform\mykey.pem -L 4213:localhost:4213 rocky@<bastion_public_ip>
   ```
+  
   브라우저에서 실행
   ```url
   http://localhost:4213
   ```
+ 
+  뷰설정
+  ```bash
+  read -p "web 로그 그룹 ID (/lab/swmetric/web): " WEB
+read -p "ske 로그 그룹 ID (ce-ske…): " SKE
+read -p "pg  로그 그룹 ID (/scp/postgresql/…): " PG
+cat > ~/views.sql <<'SQL'
+-- Web 앱 로그 (body 안 JSON 을 한 번 더 푼다)
+CREATE OR REPLACE VIEW web_log AS
+SELECT j.timestamp::TIMESTAMPTZ ts, j.level, j.service, j.host, j.message, j.event, j.trace_id, j.tier, j.method, j.path,
+       j.status::INTEGER status, j.latency_ms::DOUBLE latency_ms, j.downstream_ms::DOUBLE downstream_ms, j.self_ms::DOUBLE self_ms,
+       j.downstream_status::INTEGER downstream_status, j.downstream_pod, j.user_id, j.error_message, j.stack
+FROM (SELECT from_json(body, '{"timestamp":"VARCHAR","level":"VARCHAR","service":"VARCHAR","host":"VARCHAR","message":"VARCHAR","event":"VARCHAR","trace_id":"VARCHAR","tier":"VARCHAR","method":"VARCHAR","path":"VARCHAR","status":"VARCHAR","latency_ms":"VARCHAR","downstream_ms":"VARCHAR","self_ms":"VARCHAR","downstream_status":"VARCHAR","downstream_pod":"VARCHAR","user_id":"VARCHAR","error_message":"VARCHAR","stack":"VARCHAR"}') j
+      FROM read_json_auto('s3://celog/servicewatch/<web>_*.json') WHERE body LIKE '{%');
 
+-- Web 액세스 로그 (같은 파일의 공백 구분 줄)
+CREATE OR REPLACE VIEW access_log AS
+SELECT regexp_extract(body, '^(\S+) - (\S+) \[([^\]]+)\] "(\S+) (\S+) [^"]*" (\d+) (\d+) (\d+) (\S+)$',
+                      ['ip','user','ts','method','path','status','bytes','latency_ms','trace_id']) f
+FROM read_json_auto('s3://celog/servicewatch/<web>_*.json') WHERE body NOT LIKE '{%';
+
+-- PostgreSQL 서버 로그: SQL 문과 trace 주석
+CREATE OR REPLACE VIEW pg_log AS
+SELECT timezone('Asia/Seoul', strptime(regexp_extract(body, '^(\S+ \S+) KST', 1), '%Y-%m-%d %H:%M:%S')) ts,
+       regexp_extract(body, '\] (\S+)@', 1) db_user,
+       regexp_extract(body, '\)(LOG|ERROR|FATAL|WARNING|DETAIL|STATEMENT):', 1) kind,
+       regexp_extract(body, 'trace=([0-9a-f]+)', 1) trace_id,
+       regexp_extract(body, 'label=(\w+)', 1) label,
+       regexp_extract(body, '(LOG|ERROR|FATAL|WARNING|DETAIL|STATEMENT):\s+(.*)$', 2) text
+FROM read_json_auto('s3://celog/servicewatch/<pg>_*.json');
+
+-- K8s API 감사: 누가 어떤 kubectl 을 했나
+CREATE OR REPLACE VIEW ske_audit AS
+SELECT json_extract_string(body,'$.requestReceivedTimestamp')::TIMESTAMPTZ ts,
+       json_extract_string(body,'$.verb') verb, json_extract_string(body,'$.user.username') who,
+       json_extract_string(body,'$.requestURI') uri, json_extract(body,'$.responseStatus.code')::INTEGER code
+FROM read_json_auto('s3://celog/servicewatch/<ske>_*.json') WHERE body LIKE '{"kind":"Event","apiVersion":"audit.k8s.io%';
+
+-- K8s Event: Killing · Scheduled · Pulled · BackOff · OOMKilled
+CREATE OR REPLACE VIEW ske_events AS
+SELECT coalesce(json_extract_string(body,'$.lastTimestamp'), json_extract_string(body,'$.eventTime'), json_extract_string(body,'$.metadata.creationTimestamp'))::TIMESTAMPTZ ts,
+       json_extract_string(body,'$.type') type, json_extract_string(body,'$.reason') reason,
+       json_extract_string(body,'$.involvedObject.kind') || '/' || json_extract_string(body,'$.involvedObject.name') object,
+       json_extract_string(body,'$.message') message
+FROM read_json_auto('s3://celog/servicewatch/<ske>_*.json') WHERE json_extract_string(body,'$.reason') IS NOT NULL;
+
+-- 경로 B
+CREATE OR REPLACE VIEW fw_log  AS SELECT * FROM read_csv('s3://celog/LOG/FW/FW_IGW_ce-vpc-*/*/*.csv', header = true);
+CREATE OR REPLACE VIEW nat_log AS SELECT * FROM read_csv('s3://celog/LOG/NAT/*/*/*.csv', header = true);
+CREATE OR REPLACE VIEW sg_deny AS SELECT * FROM read_csv('s3://celog/LOG/SG/Deny/*/*.csv', header = true, ignore_errors = true);
+
+SELECT 'web_log' v, count(*) n FROM web_log UNION ALL SELECT 'pg_log', count(*) FROM pg_log
+UNION ALL SELECT 'ske_audit', count(*) FROM ske_audit UNION ALL SELECT 'ske_events', count(*) FROM ske_events
+UNION ALL SELECT 'fw_log', count(*) FROM fw_log UNION ALL SELECT 'nat_log', count(*) FROM nat_log;
+SQL
+sed -i "s/<web>/$WEB/g; s/<ske>/$SKE/g; s/<pg>/$PG/g" ~/views.sql
+grep -c '<' ~/views.sql | grep -q '^0$' && echo "IDs OK" || echo "치환 안 된 자리표시자가 있음"
+duckdb ~/logs.duckdb < ~/views.sql
+```
 
 
 
