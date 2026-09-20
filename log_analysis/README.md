@@ -85,12 +85,12 @@ Web서버에서 실행
 # 에러가 발생한 것을 확인
 sudo grep '"level":"error"' /var/log/logapp/web.log | tail -n 1 | jq '{status, downstream_status, downstream_pod, trace_id, error_message, stack}'
 ```
-# Bastion 서버에서 실행
+Bastion 서버에서 실행
 ```bash
 # 부하앱의 에러 발생 해제 및 정상화
 ~/logapp/faults.sh clear
 ```
-## 콘솔에서 로그 검토
+콘솔에서 로그 검토
 - ServiceWatch 로그 스트림: web, webaccess
 
 ## 저장 로그 추적
