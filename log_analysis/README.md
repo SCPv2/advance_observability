@@ -63,7 +63,7 @@ cd ~
 sleep 5; tail -n 2 ~/swagent-access/otelcol.log     
 ```
 
-## 서버에서 로그 검토
+## 로그 검토
 실습 PC Powershell에서 실행
 ```powershell
 # 정상 부하 발생
