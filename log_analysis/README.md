@@ -261,11 +261,11 @@ Bastion 서버에서 실행
  
 ## 정상 부하 로그 생성
 - 정상 부하  발생
-   WEB서버에서 실행
+   Bastion 서버에서 실행
    ```bash
    ~/logapp/faults.sh clear
    ```
-   Bastion 서버에서 실행
+   실습 PC에서 실행
    ```powershell
    .\loadgen.ps1 -Rps 20 -Duration 300
    ```
@@ -273,3 +273,32 @@ Bastion 서버에서 실행
   - /log/swmetric/web
   - PostgreSQL
   - SKE
+
+## DuckDB UI에서 분석
+- 탐지
+   ```sql
+   SELECT * FROM sli_timeline('<주입 -10분>', '<지금>');
+   ```
+- 국소화
+  ```sql
+  SELECT ts, path, status, latency_ms, self_ms, downstream_ms, downstream_pod, user_id, trace_id
+  FROM web_log
+  WHERE event = 'request.complete' AND ts > '<문제 시작>';
+  ```
+- 계층
+  ```sql
+  SELECT downstream_pod, count(*) n,
+       round(quantile_cont(latency_ms, 0.95)) p95,
+       round(avg(self_ms)) web_ms, round(avg(downstream_ms)) api_db_ms
+  FROM web_log
+  WHERE event = 'request.complete' AND ts > '<문제 시작>'
+  GROUP BY 1 ORDER BY p95 DESC;
+  ```
+- 변경 추적
+  ```sql
+  SELECT * FROM around('<문제 시작>', '<지금>');
+  ```
+- 증명
+  ```sql
+  SELECT * FROM trace('<trace_id>');
+  ``` 
