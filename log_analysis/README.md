@@ -227,10 +227,20 @@ Bastion 서버에서 실행
   ORDER BY ts;
   SQL
   ```
-- 매크로 생성 확인 — 소스별 사건 수와 매크로 이름 4개
-  ```bash
-  duckdb ~/logs.duckdb -c "SELECT src, count(*) n FROM events GROUP BY 1 ORDER BY 1;" -c "SELECT function_name FROM duckdb_functions() WHERE function_name IN ('sli_timeline','whatchanged','around','trace');"
-  ```
+- 매크로 생성 확인 
+   ```bash
+   duckdb ~/logs.duckdb <<'SQL'
+   CREATE OR REPLACE VIEW web_log AS
+   SELECT j.timestamp::TIMESTAMPTZ ts, j.level, j.service, j.host, j.message, j.event, j.trace_id, j.tier, j.method, j.path,
+          j.status::INTEGER status, j.latency_ms::DOUBLE latency_ms, j.downstream_ms::DOUBLE downstream_ms, j.self_ms::DOUBLE self_ms,
+          j.downstream_status::INTEGER downstream_status, j.downstream_pod, j.user_id, j.error_message, j.stack
+   FROM (SELECT from_json(CASE WHEN body LIKE '{%' THEN body END, '{"timestamp":"VARCHAR","level":"VARCHAR","service":"VARCHAR","host":"VARCHAR","message":"VARCHAR","event":"VARCHAR","trace_id":"VARCHAR","tier":"VARCHAR","method":"VARCHAR","path":"VARCHAR","status":"VARCHAR","latency_ms":"VARCHAR","downstream_ms":"VARCHAR","self_ms":"VARCHAR","downstream_status":"VARCHAR","downstream_pod":"VARCHAR","user_id":"VARCHAR","error_message":"VARCHAR","stack":"VARCHAR"}') j
+         FROM read_json_auto('s3://celog/servicewatch/6bcc567fe4d8439d81002bb164f34641_*.json'))
+   WHERE j IS NOT NULL;
+   SELECT src, count(*) n FROM events GROUP BY 1 ORDER BY 1;
+   SELECT function_name FROM duckdb_functions() WHERE function_name IN ('sli_timeline','whatchanged','around','trace');
+   SQL
+   ```
 
 - DuckDB UI 
   Bastion 에서 실행(백그라운드)
