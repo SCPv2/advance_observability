@@ -1,4 +1,4 @@
-# advance_observability
+# Samsung Cloud Platform v2 Advance Monitoring & Logging 구현
 
 ### Monitoring[/monitoring](./monitoring)
 
